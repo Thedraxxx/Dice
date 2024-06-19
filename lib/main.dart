@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+
 void main() {
   runApp(const ImageLode());
 }
@@ -12,57 +13,157 @@ class ImageLode extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Dice",
-      home: homepage(),
+      home: Homepage(),
     );
   }
 }
-class homepage extends StatefulWidget {
-  const homepage({super.key});
+
+class Homepage extends StatefulWidget {
+  const Homepage({super.key});
 
   @override
-  State<homepage> createState() => _homepageState();
+  State<Homepage> createState() => _HomepageState();
 }
 
-class _homepageState extends State<homepage> {
-  var random =Random();
-   int choice =1;
-   void generate()
-   {
+class _HomepageState extends State<Homepage> {
+  var scoreA = 0;
+  var scoreB = 0;
+  int rollA = 0;
+  int rollB = 0;
+  var num = 0;
+  var ImageA = "Images/2.jpg";
+  var ImageB = "Images/2.jpg";
+  var random = Random();
+  String resultShow = '';
+
+  void generate() {
     setState(() {
-        choice = random.nextInt(6)+1;
+      if (num == 0) {
+        rollA = random.nextInt(6) + 1;
+        scoreA += rollA;
+        ImageA = "Images/${rollA}.jpg";
+        num++;
+      } else if (num == 1) {
+        rollB = random.nextInt(6) + 1;
+        scoreB += rollB;
+        ImageB = "Images/${rollB}.jpg";
+        num--;
+      }
     });
-   }
+    result();
+  }
+
+  void result() {
+setState(() {
+      if (scoreA >= 50) {
+      setState(() {
+        resultShow = "Result: Team A won. \nReset to play again";
+      });
+    } else if (scoreB >= 50) {
+      setState(() {
+        resultShow = "Result: Team B won \nReset to Play again";
+      });
+    } else {
+      setState(() {
+        resultShow = "Keep Rolling!";
+      });
+    }
+});
+  }
+  void reset(){
+   setState(() {
+      scoreA=0;
+    scoreB=0;
+    rollA=0;
+    rollB=0;
+    resultShow = '';
+    
+   });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(onPressed: reset,
+      child: Icon(Icons.delete),
+      ),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(146, 158, 107, 5),
+        backgroundColor: Colors.black,
         title: const Text(
-          "Dice loder",
+          "Dice Loader",
           style:
-              TextStyle(color: Color.fromARGB(255, 215, 131, 3), fontSize: 30),
+              TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontSize: 35),
         ),
         centerTitle: true,
       ),
-     body: Column(
-      children: [
-         Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 100,
-                width: 100,
-                child: Image.asset('Images/$choice.jpg'),
-                decoration: BoxDecoration(
-                    border: Border.all(width: 4, color: Colors.black)),
-              ),
-            ],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: 20),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Team A",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 8),
+                      Text("Score: $scoreA", style: TextStyle(fontSize: 18)),
+                      SizedBox(height: 8),
+                      Container(
+                        height: 150,
+                        child: Image.asset(ImageA),
+                      ),
+                      SizedBox(height: 8),
+                      Text("Roll: $rollA", style: TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Team B",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 8),
+                      Text("Score: $scoreB", style: TextStyle(fontSize: 18)),
+                      SizedBox(height: 8),
+                      Container(
+                        height: 150,
+                        child: Image.asset(ImageB),
+                      ),
+                      SizedBox(height: 8),
+                      Text("Roll: $rollB", style: TextStyle(fontSize: 18)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        
-          ElevatedButton(onPressed: generate, child: Text("Roll")),
-      ],
-     ),  
+          SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              onPressed: generate,
+              child: Text("Roll", style: TextStyle(fontSize: 20)),
+            ),
+          ),
+          SizedBox(height: 20),
+          Center(
+            child: Text(
+              resultShow,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 20),
+         
+        ],
+
+      ),
     );
   }
 }
